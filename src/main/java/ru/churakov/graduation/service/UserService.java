@@ -10,7 +10,7 @@ import ru.churakov.graduation.model.User;
 import ru.churakov.graduation.repository.UserRepository;
 
 @Service("userService")
-public class UserServiceImpl implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository repository;

@@ -1,14 +1,34 @@
+### get a menu of all the restaurants for date (default today)
+GET http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11
+Authorization: Basic user@yandex.ru password
+
 ### get a menu of all the restaurants for today
 GET http://localhost:8080/topjava15graduation/rest/menu
 Authorization: Basic user@yandex.ru password
 
-### vote for restaurant with id 100008
-PUT http://localhost:8080/topjava15graduation/rest/menu/100008/vote
+### vote for restaurant
+PUT http://localhost:8080/topjava15graduation/rest/restaurants/100002/vote
+Authorization: Basic user@yandex.ru password
+
+### get all user votes
+GET http://localhost:8080/topjava15graduation/rest/votes
+Authorization: Basic user@yandex.ru password
+
+### get user votes between dates (start, end not required - default min/max)
+GET http://localhost:8080/topjava15graduation/rest/votes/filter?start=2018-12-01&end=2018-12-31
+Authorization: Basic user@yandex.ru password
+
+### get vote by id
+GET http://localhost:8080/topjava15graduation/rest/votes/100014
 Authorization: Basic user@yandex.ru password
 
 
 ### get restaurant by id
 GET http://localhost:8080/topjava15graduation/rest/restaurants/100003
+Authorization: Basic admin@gmail.com admin
+
+### get restaurant by invalid id with location (default en)
+GET http://localhost:8080/topjava15graduation/rest/restaurants/123?lang=ru
 Authorization: Basic admin@gmail.com admin
 
 ### get all restaurants
@@ -33,11 +53,11 @@ Content-Type: application/json
 
 {"name":"Mama Roma Updated"}
 
-### get a menu of restaurant with id 100003 for today
-GET http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu
+### get a menu of restaurant for today
+GET http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu?date=2020-01-02
 Authorization: Basic admin@gmail.com admin
 
-### update menu of restaurant with id 100003 for today
+### update menu of restaurant with id for today
 PUT http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu
 Authorization: Basic admin@gmail.com admin
 Content-Type: application/json
@@ -55,7 +75,7 @@ Content-Type: application/json
     ]
 }
 
-### update menu of restaurant with id 100003 for another day
+### update menu of restaurant with id for date (default today)
 PUT http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu?date=2020-01-01
 Authorization: Basic admin@gmail.com admin
 Content-Type: application/json
@@ -69,8 +89,40 @@ Content-Type: application/json
     ]
 }
 
-### get a menu of restaurant with id 100003 for date 2018-12-11
-GET http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu?date=2018-12-11
+### get a menu of restaurant with id for date
+GET http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu?date=2020-01-01
+Authorization: Basic admin@gmail.com admin
+
+### create dish with menu date (default today)
+POST http://localhost:8080/topjava15graduation/rest/restaurants/100003/menu/dishes?date=2020-01-01
+Authorization: Basic admin@gmail.com admin
+Content-Type: application/json
+
+{
+  "name": "new",
+  "price": 11111
+}
+
+### get dish with id
+GET http://localhost:8080/topjava15graduation/rest/restaurants/menu/dishes/100013
+Authorization: Basic admin@gmail.com admin
+
+### update dish with id
+PUT http://localhost:8080/topjava15graduation/rest/restaurants/menu/dishes/100013
+Authorization: Basic admin@gmail.com admin
+Content-Type: application/json
+
+{
+  "name": "UPDATED Судак Портофино с соусом песто",
+  "price": 77777
+}
+
+### delete dish with id
+DELETE http://localhost:8080/topjava15graduation/rest/restaurants/menu/dishes/100015
+Authorization: Basic admin@gmail.com admin
+
+### delete dish with id previous period
+DELETE http://localhost:8080/topjava15graduation/rest/restaurants/menu/dishes/100011
 Authorization: Basic admin@gmail.com admin
 
 ###

@@ -1,27 +1,27 @@
 package ru.churakov.graduation.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.FieldError;
-
-import java.util.Map;
+import ru.churakov.graduation.util.exception.ApplicationException;
 
 @Component
 public class MessageUtil {
 
-    private static final Map<String, String> MESSAGE_MAP = Map.of(
-            "exception.common.notFound", "Не найдена запись",
-            "error.dataNotFound", "Данные не найдены",
-            "error.wrongRequest", "Неверный запрос",
-            "error.dataError", "Ошибка в данных",
-            "error.validationError", "Ошибка проверки данных");
+    @Autowired
+    MessageSource messageSource;
 
-    public String getMessage(String code) {
-        return MESSAGE_MAP.getOrDefault(code, code);
+    public String getMessage(String code, String... args) {
+        return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }
 
-    public String getMessage(FieldError resolvable) {
-        return String.format("%s: %s",
-                resolvable.getField(),
-                resolvable.getDefaultMessage());
+    public String getMessage(MessageSourceResolvable resolvable) {
+        return messageSource.getMessage(resolvable, LocaleContextHolder.getLocale());
+    }
+
+    public String getMessage(ApplicationException appEx) {
+        return getMessage(appEx.getMsgCode(), appEx.getArgs());
     }
 }

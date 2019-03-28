@@ -5,6 +5,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import ru.churakov.graduation.model.Restaurant;
 import ru.churakov.graduation.repository.RestaurantRepository;
 import ru.churakov.graduation.util.exception.NotFoundException;
@@ -33,6 +34,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public Restaurant create(Restaurant restaurant) {
+        Assert.notNull(restaurant, "restaurant must not be null");
         checkNew(restaurant);
         return repository.save(restaurant);
     }
@@ -41,6 +43,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Transactional
     @Override
     public void update(Restaurant restaurant, int id) {
+        Assert.notNull(restaurant, "restaurant must not be null");
         checkNotFoundWithId(repository.findById(id), id);
         assureIdConsistent(restaurant, id);
         repository.save(restaurant);

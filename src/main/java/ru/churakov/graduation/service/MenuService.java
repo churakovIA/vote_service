@@ -10,14 +10,14 @@ import java.util.List;
 
 public interface MenuService {
 
-    Menu get(int id) throws NotFoundException;
+    List<Menu> getAllWithRestaurantAndDishes(LocalDate date);
 
-    List<Menu> getWithRestaurantAndDishes(LocalDate date);
+    Menu getWithRestaurantAndDishes(LocalDate date, int restaurantId) throws NotFoundException;
 
-    Menu getByDateAndRestaurant(LocalDate date, int restaurantId) throws NotFoundException;
+    void updateDishes(LocalDate date, int restaurantId, List<Dish> dishes);
 
-    void updateDishes(LocalDate date, Restaurant restaurant, List<Dish> dishes);
+    Menu get(Restaurant restaurant, LocalDate date) throws NotFoundException;
 
-    void vote(int id, int userId);
+    Menu get(Restaurant restaurant) throws NotFoundException;
 
 }

@@ -4,8 +4,10 @@ import ru.churakov.graduation.model.*;
 import ru.churakov.graduation.to.MenuTo;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
+import static java.time.LocalDate.of;
 import static ru.churakov.graduation.model.AbstractBaseEntity.START_SEQ;
 
 public class TestData {
@@ -20,11 +22,18 @@ public class TestData {
     public static final Restaurant RESTAURANT_100004 = new Restaurant(100004, "Корюшка");
     public static final Restaurant RESTAURANT_100005 = new Restaurant(100005, "Тако");
 
+    public static final Dish DISH_100010 = new Dish(100010, "БАРАНЬИ РЁБРЫШКИ ПО-ХУНАНЬСКИ", 78000, null);
+    public static final Dish DISH_100011 = new Dish(100011, "Паста Делла Мамма", 39500, null);
     public static final Dish DISH_100012 = new Dish(100012, "ЦЫПЛЕНОК, ТОМЛЕННЫЙ В ИМБИРНОМ СОУСЕ", 68000, null);
     public static final Dish DISH_100013 = new Dish(100013, "Судак Портофино с соусом песто", 42500, null);
 
+    public static final Menu MENU_100006 = new Menu(100006, of(2018, Month.DECEMBER, 11), RESTAURANT_100002, List.of(DISH_100010));
+    public static final Menu MENU_100007 = new Menu(100007, of(2018, Month.DECEMBER, 11), RESTAURANT_100003, List.of(DISH_100011));
     public static final Menu MENU_100008 = new Menu(100008, LocalDate.now(), RESTAURANT_100002, List.of(DISH_100012));
     public static final Menu MENU_100009 = new Menu(100009, LocalDate.now(), RESTAURANT_100003, List.of(DISH_100013));
+
+    public static final Vote VOTE_100014 = new Vote(100014, LocalDate.now(), MENU_100006, USER);
+    public static final Vote VOTE = new Vote(100015, LocalDate.now(), MENU_100009, USER);
 
     public static Restaurant getCreatedRestaurant() {
         return new Restaurant(null, "New");

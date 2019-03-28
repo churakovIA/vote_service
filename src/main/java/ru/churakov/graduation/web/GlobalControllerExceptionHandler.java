@@ -27,9 +27,12 @@ import static ru.churakov.graduation.util.exception.ErrorType.*;
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
-    private static final Map<String, String> MESSAGE_MAP = Map.of(
-            "votes_unique_user_date_idx", "вы уже голосовали сегодня",
-            "restaurants_unique_name_idx", "ресторан с таким названием уже существует");
+    public static final String EXCEPTION_DUPLICATE_VOTE = "exception.vote.duplicate";
+    public static final String EXCEPTION_DUPLICATE_NAME = "exception.restaurant.duplicateName";
+
+    private static final Map<String, String> CONSTRAINS_I18N_MAP = Map.of(
+            "votes_unique_user_date_idx", EXCEPTION_DUPLICATE_VOTE,
+            "restaurants_unique_name_idx", EXCEPTION_DUPLICATE_NAME);
 
     @Autowired
     private MessageUtil messageUtil;
@@ -47,10 +50,10 @@ public class GlobalControllerExceptionHandler {
         String rootMsg = ValidationUtil.getRootCause(e).getMessage();
         if (rootMsg != null) {
             String lowerCaseMsg = rootMsg.toLowerCase();
-            Optional<Map.Entry<String, String>> entry = MESSAGE_MAP.entrySet().stream()
+            Optional<Map.Entry<String, String>> entry = CONSTRAINS_I18N_MAP.entrySet().stream()
                     .filter(it -> lowerCaseMsg.contains(it.getKey()))
                     .findAny();
-            details = new String[]{entry.isPresent() ? entry.get().getValue() : lowerCaseMsg};
+            details = new String[]{entry.isPresent() ? messageUtil.getMessage(entry.get().getValue()) : lowerCaseMsg};
         } else {
             details = null;
         }
@@ -79,7 +82,7 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorInfo> applicationErrorHandler(HttpServletRequest req, ApplicationException appEx) {
-        return getResponse(appEx.getHttpStatus(), req, appEx.getType(), appEx.getArgs());
+        return getResponse(appEx.getHttpStatus(), req, appEx.getType(), messageUtil.getMessage(appEx));
     }
 
     //500

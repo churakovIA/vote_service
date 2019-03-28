@@ -4,6 +4,7 @@ import ru.churakov.graduation.HasId;
 import ru.churakov.graduation.util.exception.IllegalRequestDataException;
 import ru.churakov.graduation.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class ValidationUtil {
@@ -51,6 +52,13 @@ public class ValidationUtil {
         } else if (bean.getId() != id) {
             throw new IllegalRequestDataException(bean + " must be with id=" + id);
         }
+    }
+
+    public static LocalDate checkMenuDateBeforeUpdate(LocalDate menuDate) {
+        if (LocalDate.now().isAfter(menuDate)) {
+            throw new IllegalRequestDataException("it is forbidden to change the menu of the previous period");
+        }
+        return menuDate;
     }
 
     //  http://stackoverflow.com/a/28565320/548473

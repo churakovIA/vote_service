@@ -10,21 +10,17 @@ import ru.churakov.graduation.model.Dish;
 import ru.churakov.graduation.model.Menu;
 import ru.churakov.graduation.model.Restaurant;
 import ru.churakov.graduation.repository.MenuRepository;
-import ru.churakov.graduation.util.exception.IllegalRequestDataException;
+import ru.churakov.graduation.repository.RestaurantRepository;
 import ru.churakov.graduation.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
-import static ru.churakov.graduation.util.Util.orElse;
+import static ru.churakov.graduation.util.ValidationUtil.checkMenuDateBeforeUpdate;
 import static ru.churakov.graduation.util.ValidationUtil.checkNotFound;
-import static ru.churakov.graduation.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MenuServiceImpl implements MenuService {
-
-    private static final LocalTime EXPIRED_TIME = LocalTime.of(11, 0);
 
     @Autowired
     MenuRepository repository;
@@ -32,36 +28,33 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     VoteService voteService;
 
-    @Override
-    public Menu get(int id) throws NotFoundException {
-        return checkNotFoundWithId(repository.findById(id), id);
-    }
+    @Autowired
+    RestaurantRepository restaurantRepository;
 
     @Cacheable("menu")
     @Override
-    public List<Menu> getWithRestaurantAndDishes(LocalDate date) {
-        return repository.getWithRestaurantAndDishesByDate(orElse(date, LocalDate.now()));
+    public List<Menu> getAllWithRestaurantAndDishes(LocalDate date) {
+        Assert.notNull(date, "date must not be null");
+        return repository.getAllWithRestaurantAndDishes(date);
     }
 
     @Override
-    public Menu getByDateAndRestaurant(LocalDate date, int restaurantId) {
-        LocalDate menuDate = orElse(date, LocalDate.now());
-        return checkNotFound(repository.getByDateAndRestaurant(menuDate, restaurantId),
-                "restaurant id=" + restaurantId + ", date=" + menuDate);
+    public Menu getWithRestaurantAndDishes(LocalDate date, int restaurantId) throws NotFoundException {
+        Assert.notNull(date, "date must not be null");
+        return checkNotFound(repository.getWithRestaurantAndDishes(date, restaurantRepository.getOne(restaurantId)),
+                "menu not found for restaurant id=" + restaurantId + ", date=" + date);
     }
 
     @CacheEvict(value = "menu", allEntries = true)
     @Transactional
     @Override
-    public void updateDishes(LocalDate date, Restaurant restaurant, List<Dish> dishes) {
+    public void updateDishes(LocalDate date, int restaurantId, List<Dish> dishes) {
         Assert.notNull(dishes, "list dishes must not be null");
-        LocalDate menuDate = orElse(date, LocalDate.now());
-        if (LocalDate.now().isAfter(menuDate)) {
-            throw new IllegalRequestDataException("нельзя редактировать меню прошлого периода");
-        }
-        Menu menu = repository.getByDateAndRestaurant(menuDate, restaurant.getId())
+        checkNotFound(restaurantRepository.existsById(restaurantId), "id=" + restaurantId);
+        checkMenuDateBeforeUpdate(date);
+        Menu menu = repository.getWithRestaurantAndDishes(date, restaurantRepository.getOne(restaurantId))
                 .orElseGet(() -> repository.save(
-                        new Menu(menuDate, restaurant)));
+                        new Menu(date, restaurantRepository.getOne(restaurantId))));
         dishes.forEach(dish -> dish.setMenu(menu));
         //menu.setDishes(dishes); // not work https://stackoverflow.com/questions/5587482
         menu.getDishes().clear();
@@ -69,15 +62,16 @@ public class MenuServiceImpl implements MenuService {
         repository.save(menu);
     }
 
-    @Transactional
     @Override
-    public void vote(int id, int userId) {
-        Menu menu = get(id);
-        if (!LocalDate.now().equals(menu.getDate())) {
-            throw new IllegalRequestDataException("меню устарело");
-        }
-        if (LocalTime.now().isAfter(EXPIRED_TIME) || voteService.updateIfPresent(menu, userId) == null) {
-            voteService.save(menu, userId);
-        }
+    public Menu get(Restaurant restaurant, LocalDate date) throws NotFoundException {
+        Assert.notNull(restaurant, "restaurant must not be null");
+        Assert.notNull(date, "date must not be null");
+        return checkNotFound(repository.findByDateAndRestaurant(date, restaurant),
+                "menu not found for restaurant=" + restaurant + ", date=" + date);
+    }
+
+    @Override
+    public Menu get(Restaurant restaurant) throws NotFoundException {
+        return get(restaurant, LocalDate.now());
     }
 }

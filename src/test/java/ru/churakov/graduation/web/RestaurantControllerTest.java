@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.churakov.graduation.model.Menu;
 import ru.churakov.graduation.model.Restaurant;
+import ru.churakov.graduation.repository.VoteRepository;
 import ru.churakov.graduation.service.MenuService;
 import ru.churakov.graduation.service.RestaurantService;
 import ru.churakov.graduation.to.MenuTo;
@@ -28,6 +29,9 @@ class RestaurantControllerTest extends AbstractControllerTest {
 
     @Autowired
     MenuService menuService;
+
+    @Autowired
+    VoteRepository voteRepository;
 
     @Test
     void testGetAll() throws Exception {
@@ -101,8 +105,31 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertThat(menuService.getByDateAndRestaurant(null, RESTAURANT_100003.getId()).getDishes())
-                .usingElementComparatorIgnoringFields("id", "menu")
-                .isEqualTo(updated.getDishes());
+//        assertThat(menuService.getWithRestaurantAndDishes(null, RESTAURANT_100003.getId()).getDishes())
+//                .usingElementComparatorIgnoringFields("id", "menu")
+//                .isEqualTo(updated.getDishes());
     }
+
+    @Test
+    void vote() throws Exception {
+        mockMvc.perform(put(REST_URL + RESTAURANT_100003.getId() + "/vote")
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isCreated());
+//        assertThat(voteRepository.findByUserIdAndDateWithMenu(USER_ID, LocalDate.now()).orElse(null))
+//                .isEqualToComparingFieldByField(VOTE);
+    }
+
+    @Test
+    void testGetAllForbidden() throws Exception {
+        mockMvc.perform(get(REST_URL)
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetUnAuth() throws Exception {
+        mockMvc.perform(get(REST_URL))
+                .andExpect(status().isUnauthorized());
+    }
+
 }

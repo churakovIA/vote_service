@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
 @Table(name = "dishes")
 public class Dish extends AbstractNamedEntity {
 
-    @Min(value = 1, message = "цена должна быть больше 0")
+    @Min(value = 1, message = "price must be greater than 0")
     @Column(name = "price", nullable = false)
     private int price;
 
@@ -30,7 +30,7 @@ public class Dish extends AbstractNamedEntity {
         this.menu = menu;
     }
 
-    public Dish(Integer id, String name, @Min(value = 1, message = "цена должна быть больше 0") int price, Menu menu) {
+    public Dish(Integer id, String name, @Min(value = 1, message = "price must be greater than 0") int price, Menu menu) {
         super(id, name);
         this.price = price;
         this.menu = menu;

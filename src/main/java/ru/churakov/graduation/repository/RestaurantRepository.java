@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.churakov.graduation.model.Restaurant;
 
 import java.util.List;
-import java.util.Optional;
 
 @Transactional(readOnly = true)
 public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
@@ -22,9 +21,6 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Integer>
     @Modifying
     @Query("DELETE FROM Restaurant r WHERE r.id=:id")
     int delete(@Param("id") int id);
-
-    @Override
-    Optional<Restaurant> findById(Integer id);
 
     @Override
     List<Restaurant> findAll(Sort sort);
