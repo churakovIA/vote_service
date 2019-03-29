@@ -1,6 +1,7 @@
 package ru.churakov.graduation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -31,6 +32,7 @@ public class DishServiceImpl implements DishService {
         return checkNotFoundWithId(repository.findById(id), id);
     }
 
+    @CacheEvict(value = "menu", allEntries = true)
     @Transactional
     @Override
     public void update(Dish dish, int id) {
@@ -42,6 +44,7 @@ public class DishServiceImpl implements DishService {
         repository.save(dish);
     }
 
+    @CacheEvict(value = "menu", allEntries = true)
     @Transactional
     @Override
     public void delete(int id) throws NotFoundException {
@@ -49,6 +52,7 @@ public class DishServiceImpl implements DishService {
         repository.deleteById(id);
     }
 
+    @CacheEvict(value = "menu", allEntries = true)
     @Transactional
     @Override
     public Dish create(Dish dish, int restaurantId, LocalDate date) {

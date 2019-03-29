@@ -28,6 +28,29 @@ class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getBetween() {
+    void getBetween() throws Exception {
+        mockMvc.perform(get(REST_URL + "/filter")
+                .param("start", "2018-12-01")
+                .param("end", "2018-12-31")
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isOk())
+                .andExpect(result -> assertThat(service.getAll(USER_ID))
+                        .isEqualTo(List.of(VOTE_100014)));
+    }
+
+    @Test
+    void testGet() throws Exception {
+        mockMvc.perform(get(REST_URL + VOTE100014_ID)
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isOk())
+                .andExpect(result -> assertThat(service.get(VOTE100014_ID, USER_ID))
+                        .isEqualTo(VOTE_100014));
+    }
+
+    @Test
+    void getNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + 123456)
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isUnprocessableEntity());
     }
 }

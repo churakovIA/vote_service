@@ -32,8 +32,12 @@ public class TestData {
     public static final Menu MENU_100008 = new Menu(100008, LocalDate.now(), RESTAURANT_100002, List.of(DISH_100012));
     public static final Menu MENU_100009 = new Menu(100009, LocalDate.now(), RESTAURANT_100003, List.of(DISH_100013));
 
-    public static final Vote VOTE_100014 = new Vote(100014, LocalDate.now(), MENU_100006, USER);
-    public static final Vote VOTE = new Vote(100015, LocalDate.now(), MENU_100009, USER);
+    public static final int VOTE100014_ID = START_SEQ + 14;
+    public static final Vote VOTE_100014 = new Vote(VOTE100014_ID, of(2018, Month.DECEMBER, 11), MENU_100006, USER);
+
+    public static Vote getCreatedVote() {
+        return new Vote(null, LocalDate.now(), MENU_100008, USER);
+    }
 
     public static Restaurant getCreatedRestaurant() {
         return new Restaurant(null, "New");
@@ -48,6 +52,14 @@ public class TestData {
                 new Dish(null, "Пельмени", 55500, null),
                 new Dish(null, "Борщ", 22200, null),
                 new Dish(null, "Яичница", 33300, null)));
+    }
+
+    public static Dish getCreatedDish() {
+        return new Dish(null, "new", 100, null);
+    }
+
+    public static Dish getUpdatedDish() {
+        return new Dish(DISH_100013.getId(), "UPDATED " + DISH_100013.getName(), 77777, null);
     }
 
 }

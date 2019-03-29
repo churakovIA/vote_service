@@ -1,6 +1,8 @@
 package ru.churakov.graduation.web;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +34,9 @@ abstract public class AbstractControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     @PostConstruct
     private void postConstruct() {
         mockMvc = MockMvcBuilders
@@ -40,4 +45,10 @@ abstract public class AbstractControllerTest {
                 .apply(springSecurity())
                 .build();
     }
+
+    @BeforeEach
+    void setUp() {
+        cacheManager.getCache("menu").clear();
+    }
+
 }

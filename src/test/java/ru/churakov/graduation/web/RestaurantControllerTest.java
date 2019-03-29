@@ -4,14 +4,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import ru.churakov.graduation.model.Dish;
 import ru.churakov.graduation.model.Menu;
 import ru.churakov.graduation.model.Restaurant;
-import ru.churakov.graduation.repository.VoteRepository;
+import ru.churakov.graduation.model.Vote;
+import ru.churakov.graduation.repository.DishRepository;
+import ru.churakov.graduation.service.DishService;
 import ru.churakov.graduation.service.MenuService;
 import ru.churakov.graduation.service.RestaurantService;
+import ru.churakov.graduation.service.VoteService;
 import ru.churakov.graduation.to.MenuTo;
 import ru.churakov.graduation.web.json.JsonUtil;
 
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +37,13 @@ class RestaurantControllerTest extends AbstractControllerTest {
     MenuService menuService;
 
     @Autowired
-    VoteRepository voteRepository;
+    VoteService voteService;
+
+    @Autowired
+    DishService dishService;
+
+    @Autowired
+    DishRepository dishRepository;
 
     @Test
     void testGetAll() throws Exception {
@@ -50,6 +62,13 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
                 .andExpect(result -> assertThat(service.get(id)).isEqualTo(RESTAURANT_100003));
+    }
+
+    @Test
+    void getNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + 123456)
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
@@ -80,8 +99,20 @@ class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateNotFound() throws Exception {
+        Restaurant updated = getUpdatedRestaurant();
+        mockMvc.perform(put(REST_URL + 123456)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
+        assertThat(service.getAll())
+                .isEqualTo(List.of(RESTAURANT_100003, RESTAURANT_100004, RESTAURANT_100002, RESTAURANT_100005));
+    }
+
+    @Test
     void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + "100005")
+        mockMvc.perform(delete(REST_URL + RESTAURANT_100005.getId())
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -89,34 +120,129 @@ class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void deleteNotFound() throws Exception {
+        mockMvc.perform(delete(REST_URL + 123456)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
+        assertThat(service.getAll()).isEqualTo(List.of(RESTAURANT_100003, RESTAURANT_100004, RESTAURANT_100002, RESTAURANT_100005));
+    }
+
+    @Test
     void getMenu() throws Exception {
-        mockMvc.perform(get(REST_URL + RESTAURANT_100003.getId() + "/menu")
+        mockMvc.perform(get(REST_URL + RESTAURANT_100002.getId() + "/menu")
+                .param("date", "2018-12-11")
                 .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk())
-                .andExpect(result -> assertThat(readFromJsonMvcResult(result, Menu.class)).isEqualTo(MENU_100009));
+                .andExpect(result -> assertThat(readFromJsonMvcResult(result, Menu.class)).isEqualTo(MENU_100006));
+    }
+
+    @Test
+    void getMenuForToday() throws Exception {
+        mockMvc.perform(get(REST_URL + RESTAURANT_100002.getId() + "/menu")
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isOk())
+                .andExpect(result -> assertThat(readFromJsonMvcResult(result, Menu.class)).isEqualTo(MENU_100008));
+    }
+
+    @Test
+    void getMenuNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + RESTAURANT_100002.getId() + "/menu")
+                .param("date", "2099-01-01")
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
     void updateMenu() throws Exception {
         MenuTo updated = getUpdatedMenuTo();
         mockMvc.perform(put(REST_URL + RESTAURANT_100003.getId() + "/menu")
+                .param("date", "2099-01-01")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-//        assertThat(menuService.getWithRestaurantAndDishes(null, RESTAURANT_100003.getId()).getDishes())
-//                .usingElementComparatorIgnoringFields("id", "menu")
-//                .isEqualTo(updated.getDishes());
+        assertThat(menuService.getWithRestaurantAndDishes(LocalDate.parse("2099-01-01"), RESTAURANT_100003.getId()).getDishes())
+                .usingElementComparatorIgnoringFields("id", "menu")
+                .isEqualTo(updated.getDishes());
     }
 
     @Test
+    void updateMenuIllegalDate() throws Exception {
+        mockMvc.perform(put(REST_URL + RESTAURANT_100003.getId() + "/menu")
+                .param("date", "2018-01-01")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedMenuTo()))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void createDishWithLocation() throws Exception {
+        Dish created = getCreatedDish();
+        ResultActions resultActions = mockMvc.perform(post(REST_URL + RESTAURANT_100003.getId() + "/menu/dishes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isCreated());
+        Dish returned = readFromJsonResultActions(resultActions, Dish.class);
+        created.setId(returned.getId());
+        assertThat(returned).isEqualTo(created);
+
+        assertThat(dishRepository.findAllByMenuIdOrderById(MENU_100009.getId()))
+                .isEqualTo(List.of(DISH_100013, created));
+
+    }
+
+    @Test
+    void getDish() throws Exception {
+        mockMvc.perform(get(REST_URL + "/menu/dishes/" + DISH_100013.getId())
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isOk())
+                .andExpect(result -> assertThat(dishService.get(DISH_100013.getId())).isEqualTo(DISH_100013));
+    }
+
+    @Test
+    void getDishNotFound() throws Exception {
+        mockMvc.perform(get(REST_URL + "/menu/dishes/123456")
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void updateDish() throws Exception {
+        Dish updated = getUpdatedDish();
+        mockMvc.perform(put(REST_URL + "/menu/dishes/" + DISH_100013.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isNoContent());
+        assertThat(dishService.get(DISH_100013.getId())).isEqualTo(updated);
+    }
+
+    @Test
+    void deleteDish() throws Exception {
+        mockMvc.perform(delete(REST_URL + "/menu/dishes/" + DISH_100013.getId())
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isNoContent());
+        assertThat(dishRepository.findAllByMenuIdOrderById(MENU_100009.getId()))
+                .isEqualTo(Collections.emptyList());
+    }
+
+
+    @Test
     void vote() throws Exception {
-        mockMvc.perform(put(REST_URL + RESTAURANT_100003.getId() + "/vote")
+        ResultActions resultActions = mockMvc.perform(put(REST_URL + RESTAURANT_100003.getId() + "/vote")
                 .with(userHttpBasic(USER)))
                 .andExpect(status().isCreated());
-//        assertThat(voteRepository.findByUserIdAndDateWithMenu(USER_ID, LocalDate.now()).orElse(null))
-//                .isEqualToComparingFieldByField(VOTE);
+        Vote returned = readFromJsonResultActions(resultActions, Vote.class);
+        Vote created = getCreatedVote();
+        created.setId(returned.getId());
+        assertThat(returned).isEqualTo(created);
+        LocalDate now = LocalDate.now();
+        assertThat(voteService.getBetweenDates(USER_ID, now, now)).isEqualTo(List.of(created));
     }
 
     @Test
