@@ -37,6 +37,12 @@ public class VoteServiceImpl implements VoteService {
         return checkNotFoundWithId(repository.findById(id).filter(v -> v.getUser().getId() == userId), id);
     }
 
+    /**
+     * After EXPIRED_TIME create a new voice, if the user has already voted, then a DataIntegrityViolationException
+     * occurs because of the uniqueness of the base index.
+     * Before EXPIRED_TIME we are looking for a voice in the database. If we find something we update,
+     * otherwise we create a new voice.
+     */
     @Transactional
     @Override
     public UpdatedVote createOrUpdate(int restaurantId, int userId) {

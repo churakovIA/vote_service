@@ -14,16 +14,14 @@ Each restaurant provides new menu each day.
 ## REST API using Hibernate/Spring/SpringMVC
 
 ### get a menu of all the restaurants for date (default today)
-GET http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11 \
-Authorization: Basic user@yandex.ru password
+GET http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11
 
-curl -s http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11 --user user@yandex.ru:password
+curl -s http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11
   
 ### get a menu of all the restaurants for today
-GET http://localhost:8080/topjava15graduation/rest/menu \
-Authorization: Basic user@yandex.ru password
+GET http://localhost:8080/topjava15graduation/rest/menu
 
-curl -s http://localhost:8080/topjava15graduation/rest/menu --user user@yandex.ru:password
+curl -s http://localhost:8080/topjava15graduation/rest/menu
 
 ### vote for restaurant
 PUT http://localhost:8080/topjava15graduation/rest/restaurants/100003/vote \

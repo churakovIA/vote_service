@@ -1,10 +1,8 @@
 ### get a menu of all the restaurants for date (default today)
 GET http://localhost:8080/topjava15graduation/rest/menu?date=2018-12-11
-Authorization: Basic user@yandex.ru password
 
 ### get a menu of all the restaurants for today
 GET http://localhost:8080/topjava15graduation/rest/menu
-Authorization: Basic user@yandex.ru password
 
 ### vote for restaurant
 PUT http://localhost:8080/topjava15graduation/rest/restaurants/100002/vote
