@@ -1,5 +1,7 @@
 # Voting system for deciding where to have lunch
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d0555a4a43e845858ae2ce8dc1a67ec3)](https://www.codacy.com/app/churakovIA/vote_service?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=churakovIA/vote_service&amp;utm_campaign=Badge_Grade)
+
  * 2 types of users: admin and regular users
  * Admin can input a restaurant and it's lunch menu of the day (2-5 items usually, just a dish name and price)
  * Menu changes each day (admins do the updates)
