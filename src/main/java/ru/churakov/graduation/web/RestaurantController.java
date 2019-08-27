@@ -1,6 +1,5 @@
 package ru.churakov.graduation.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +27,23 @@ import static ru.churakov.graduation.util.Util.orElse;
 public class RestaurantController {
     static final String REST_URL = "/rest/restaurants";
 
-    @Autowired
-    RestaurantService service;
+    private RestaurantService service;
 
-    @Autowired
-    MenuService menuService;
+    private MenuService menuService;
 
-    @Autowired
-    VoteService voteService;
+    private VoteService voteService;
 
-    @Autowired
-    DishService dishService;
+    private DishService dishService;
+
+    public RestaurantController(RestaurantService service,
+                                MenuService menuService,
+                                VoteService voteService,
+                                DishService dishService) {
+        this.service = service;
+        this.menuService = menuService;
+        this.voteService = voteService;
+        this.dishService = dishService;
+    }
 
     @GetMapping
     public List<Restaurant> getAll() {

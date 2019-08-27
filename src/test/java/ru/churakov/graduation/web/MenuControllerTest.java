@@ -31,7 +31,7 @@ class MenuControllerTest extends AbstractControllerTest {
     @Test
     void getAllForDate() throws Exception {
         mockMvc.perform(get(REST_URL)
-                .param("date","2018-12-11"))
+                .param("date", "2018-12-11"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))

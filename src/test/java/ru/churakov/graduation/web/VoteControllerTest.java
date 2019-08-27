@@ -16,7 +16,7 @@ class VoteControllerTest extends AbstractControllerTest {
     private static final String REST_URL = VoteController.REST_URL + '/';
 
     @Autowired
-    VoteService service;
+    private VoteService service;
 
     @Test
     void getAll() throws Exception {

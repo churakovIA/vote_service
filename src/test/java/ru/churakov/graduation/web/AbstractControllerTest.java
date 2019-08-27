@@ -2,6 +2,7 @@ package ru.churakov.graduation.web;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,8 +48,11 @@ abstract public class AbstractControllerTest {
     }
 
     @BeforeEach
-    void setUp() {
-        cacheManager.getCache("menu").clear();
+    public void setUp() {
+        Cache cache = cacheManager.getCache("menu");
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
 }

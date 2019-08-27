@@ -1,6 +1,5 @@
 package ru.churakov.graduation.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,11 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     private static final Sort SORT_NAME = new Sort(Sort.Direction.ASC, "name");
 
-    @Autowired
-    RestaurantRepository repository;
+    private RestaurantRepository repository;
+
+    public RestaurantServiceImpl(RestaurantRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public List<Restaurant> getAll() {
@@ -52,6 +54,6 @@ public class RestaurantServiceImpl implements RestaurantService {
     @CacheEvict(value = "menu", allEntries = true)
     @Override
     public void delete(int id) throws NotFoundException {
-        checkNotFoundWithId(repository.delete(id)!=0, id);
+        checkNotFoundWithId(repository.delete(id) != 0, id);
     }
 }

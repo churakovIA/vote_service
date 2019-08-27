@@ -1,6 +1,5 @@
 package ru.churakov.graduation.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +17,17 @@ import static ru.churakov.graduation.util.ValidationUtil.*;
 @Service
 public class DishServiceImpl implements DishService {
 
-    @Autowired
-    DishRepository repository;
+    private DishRepository repository;
 
-    @Autowired
-    RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    MenuService menuService;
+    private MenuService menuService;
+
+    public DishServiceImpl(DishRepository repository, RestaurantRepository restaurantRepository, MenuService menuService) {
+        this.repository = repository;
+        this.restaurantRepository = restaurantRepository;
+        this.menuService = menuService;
+    }
 
     @Override
     public Dish get(int id) throws NotFoundException {

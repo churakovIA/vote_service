@@ -1,6 +1,5 @@
 package ru.churakov.graduation.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -20,17 +19,23 @@ import static ru.churakov.graduation.util.ValidationUtil.checkNotFoundWithId;
 @Service
 public class VoteServiceImpl implements VoteService {
 
-    @Autowired
-    VoteRepository repository;
+    private VoteRepository repository;
 
-    @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    @Autowired
-    MenuService menuService;
+    private MenuService menuService;
 
-    @Autowired
-    RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
+
+    public VoteServiceImpl(VoteRepository repository,
+                           UserRepository userRepository,
+                           MenuService menuService,
+                           RestaurantRepository restaurantRepository) {
+        this.repository = repository;
+        this.userRepository = userRepository;
+        this.menuService = menuService;
+        this.restaurantRepository = restaurantRepository;
+    }
 
     @Override
     public Vote get(int id, int userId) throws NotFoundException {

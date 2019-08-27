@@ -1,6 +1,5 @@
 package ru.churakov.graduation.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -22,14 +21,14 @@ import static ru.churakov.graduation.util.ValidationUtil.checkNotFound;
 @Service
 public class MenuServiceImpl implements MenuService {
 
-    @Autowired
-    MenuRepository repository;
+    private MenuRepository repository;
 
-    @Autowired
-    VoteService voteService;
+    private RestaurantRepository restaurantRepository;
 
-    @Autowired
-    RestaurantRepository restaurantRepository;
+    public MenuServiceImpl(MenuRepository repository, RestaurantRepository restaurantRepository) {
+        this.repository = repository;
+        this.restaurantRepository = restaurantRepository;
+    }
 
     @Cacheable("menu")
     @Override

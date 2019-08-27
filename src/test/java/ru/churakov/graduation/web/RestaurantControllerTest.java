@@ -31,19 +31,19 @@ class RestaurantControllerTest extends AbstractControllerTest {
     private static final String REST_URL = RestaurantController.REST_URL + '/';
 
     @Autowired
-    RestaurantService service;
+    private RestaurantService service;
 
     @Autowired
-    MenuService menuService;
+    private MenuService menuService;
 
     @Autowired
-    VoteService voteService;
+    private VoteService voteService;
 
     @Autowired
-    DishService dishService;
+    private DishService dishService;
 
     @Autowired
-    DishRepository dishRepository;
+    private DishRepository dishRepository;
 
     @Test
     void testGetAll() throws Exception {
