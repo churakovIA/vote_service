@@ -29,6 +29,26 @@
                 </configuration>
 -->
             </plugin>
+<!--        Jacoco-->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -37,6 +57,7 @@
         <tomcat.version>9.0.14</tomcat.version>
         <jackson-json.version>2.9.7</jackson-json.version>
         <spring.security.version>5.1.1.RELEASE</spring.security.version>
+        <jacoco.version>0.8.4</jacoco.version>
         <!--Spring-->
         <spring.version>5.1.2.RELEASE</spring.version>
         <spring-data-jpa.version>2.1.2.RELEASE</spring-data-jpa.version>
