@@ -56,7 +56,7 @@
         <java.version>11</java.version>
         <tomcat.version>9.0.14</tomcat.version>
         <jackson-json.version>2.9.7</jackson-json.version>
-        <spring.security.version>5.1.1.RELEASE</spring.security.version>
+        <spring.security.version>5.2.10.RELEASE</spring.security.version>
         <jacoco.version>0.8.4</jacoco.version>
         <!--Spring-->
         <spring.version>5.1.2.RELEASE</spring.version>
